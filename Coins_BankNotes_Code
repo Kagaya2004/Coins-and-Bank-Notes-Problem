@@ -1,0 +1,151 @@
+# include <stdio.h>
+# include <iostream>
+# include <cmath>
+
+using namespace std;
+
+struct Dinheiro
+{
+    float Notas[6]; // Vetor Estático para Armanzenar os Valores de cada Nota
+    int Qtd_Notas[6]; // Vetor Estátito para Armazenar a Quantidade de cada Nota
+    float Moedas[6]; // Vetor Estático para Armanzenar os Valores de cada Moeda
+    int Qtd_Moedas[6]; // Vetor Estátito para Armazenar a Quantidade de cada Moeda
+};
+
+void Iniciar_Dinheiro (Dinheiro *D)
+{
+    if (D != NULL)
+    {
+        // Notas Utilizadas
+        D->Notas[0] = 100.00;
+        D->Notas[1] = 50.00;
+        D->Notas[2] = 20.00;
+        D->Notas[3] = 10.00;
+        D->Notas[4] = 5.00;
+        D->Notas[5] = 2.00;
+        // Moedas Utilizadas
+        D->Moedas[0] = 1.00;
+        D->Moedas[1] = 0.50;
+        D->Moedas[2] = 0.25;
+        D->Moedas[3] = 0.10;
+        D->Moedas[4] = 0.05;
+        D->Moedas[5] = 0.01;
+        // Quantidade de Cada Nota
+        D->Qtd_Notas[0] = 0;
+        D->Qtd_Notas[1] = 0;
+        D->Qtd_Notas[2] = 0;
+        D->Qtd_Notas[3] = 0;
+        D->Qtd_Notas[4] = 0;
+        D->Qtd_Notas[5] = 0;
+        // Quantidade de Cada Moeda
+        D->Qtd_Moedas[0] = 0;
+        D->Qtd_Moedas[1] = 0;
+        D->Qtd_Moedas[2] = 0;
+        D->Qtd_Moedas[3] = 0;
+        D->Qtd_Moedas[4] = 0;
+        D->Qtd_Moedas[5] = 0;
+    }
+}
+
+void Iniciar_Moedas_Inteiros(Dinheiro *M)
+{
+    if (M != NULL)
+    {
+        M->Moedas[0] = 100.00;
+        M->Moedas[1] = 50.00;
+        M->Moedas[2] = 25.00;
+        M->Moedas[3] = 10.00;
+        M->Moedas[4] = 5.00;
+        M->Moedas[5] = 1.00;
+        M->Qtd_Moedas[0] = 0;
+        M->Qtd_Moedas[1] = 0;
+        M->Qtd_Moedas[2] = 0;
+        M->Qtd_Moedas[3] = 0;
+        M->Qtd_Moedas[4] = 0;
+        M->Qtd_Moedas[5] = 0;
+    }
+}
+
+void Subtrair_Moedas(Dinheiro *D, float R)
+{
+    int Cont_Moedas;
+    Dinheiro New_Moedas;
+    Dinheiro *P_NM;
+    
+    Iniciar_Moedas_Inteiros(&New_Moedas); // Converter os valores decimais das moedas para inteiros
+    R = round(R * 10000) / 100; // Arredondar Resto de decimal para inteiro
+
+    
+    for (Cont_Moedas = 0; Cont_Moedas < 6; Cont_Moedas++) // Trocar as moedas utilizadas (de maior valor para de menor de valor)
+    {
+        while (R >= New_Moedas.Moedas[Cont_Moedas]) // Trocar o máximo possível da nota utilizada
+        {
+            R = R - New_Moedas.Moedas[Cont_Moedas];
+            New_Moedas.Qtd_Moedas[Cont_Moedas]++;
+        }
+    }
+    
+    // Passar a Quantidade de Moedas
+    D->Qtd_Moedas[0] = New_Moedas.Qtd_Moedas[0];
+    D->Qtd_Moedas[1] = New_Moedas.Qtd_Moedas[1];
+    D->Qtd_Moedas[2] = New_Moedas.Qtd_Moedas[2];
+    D->Qtd_Moedas[3] = New_Moedas.Qtd_Moedas[3];
+    D->Qtd_Moedas[4] = New_Moedas.Qtd_Moedas[4];
+    D->Qtd_Moedas[5] = New_Moedas.Qtd_Moedas[5];
+    //
+}
+
+void Subtrair_Dinheiro(Dinheiro *D, float V)
+{
+    int Cont_Notas = 0, Cont_Moedas = 0;
+    Dinheiro *Dados_Moedas;
+    float Resto = round(V * 100) / 100;
+    
+    while (Resto > 0) // Loop para realizar a Conversão, parando com o Resto for igual a zero
+    {
+        if (Resto < 2) // Condição para realizar a Conversão das Moedas
+        {
+            Subtrair_Moedas(D, Resto); // Verificar e quantificar as moedas utilizadas
+            Resto = 0; // Finalizar a conversão (Bug na subtração com R$0.01)
+        }
+        else
+        {
+            for (Cont_Notas = 0; Cont_Notas < 6; Cont_Notas++) // Trocar as notas usadas (de maior valor para de menor valor)
+            {
+                while (Resto >= D->Notas[Cont_Notas]) // Trocar o máximo possível de notas
+                {
+                    Resto = Resto - D->Notas[Cont_Notas]; // Subtração do Valor da nota para obter o Resto
+                    D->Qtd_Notas[Cont_Notas]++; // Incrementar a Quantidade de Notas
+                }
+            }
+        }
+    }
+    
+    cout << "NOTAS:" << endl;
+    cout << D->Qtd_Notas[0] << " nota(s) de R$ 100.00" << endl;
+    cout << D->Qtd_Notas[1] << " nota(s) de R$ 50.00" << endl;
+    cout << D->Qtd_Notas[2] << " nota(s) de R$ 20.00" << endl;
+    cout << D->Qtd_Notas[3] << " nota(s) de R$ 10.00" << endl;
+    cout << D->Qtd_Notas[4] << " nota(s) de R$ 5.00" << endl;
+    cout << D->Qtd_Notas[5] << " nota(s) de R$ 2.00" << endl;
+    cout << endl;
+    cout << D->Qtd_Moedas[0] << " moeda(s) de R$ 1.00" << endl;
+    cout << D->Qtd_Moedas[1] << " moeda(s) de R$ 0.50" << endl;
+    cout << D->Qtd_Moedas[2] << " moeda(s) de R$ 0.25" << endl;
+    cout << D->Qtd_Moedas[3] << " moeda(s) de R$ 0.10" << endl;
+    cout << D->Qtd_Moedas[4] << " moeda(s) de R$ 0.05" << endl;
+    cout << D->Qtd_Moedas[5] << " moeda(s) de R$ 0.01" << endl;
+}
+
+Dinheiro Carteira;
+int main()
+{
+    float Valor;
+    cout << "Valor em Dinheiro: R$ ";
+    cin >> Valor;
+    
+    Iniciar_Dinheiro(&Carteira); // Iniciar com os Valores das Notas e Moedas
+    Subtrair_Dinheiro(&Carteira, Valor); // Realizar a Conversão do Dinheiro inserido
+
+    return 0;
+}
